@@ -1,21 +1,10 @@
 #!/bin/bash
 cd ~
 
-# Сохраняем скрипт в /root/mine.sh и делаем его исполняемым
-wget "https://drive.google.com/uc?export=download&id=1dhSfgivVbym0jHSdhxo0D0XGb_OW4EVB" -O /root/mine.sh
-chmod +x /root/mine.sh
+# Скачиваем, распаковываем и удаляем архив майнера
+wget https://github.com/rigelminer/rigel/releases/download/1.15.0/rigel-1.15.0-linux.tar.gz
+tar -xvf rigel-1.15.0-linux.tar.gz
+rm rigel-1.15.0-linux.tar.gz
 
-if [ ! -f /etc/supervisor/conf.d/delegated_entrypoint.conf ]; then
-# Настройка логирования supervisord через перенаправление stdout и stderr в файлы:
-echo "[program:delegated_entrypoint]" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-echo "command=/root/mine.sh" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-echo "directory=/root" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-echo "autostart=true" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-echo "autorestart=true" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-echo "startsecs=10" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-# echo "stdout_logfile=/var/log/delegated_entrypoint.log" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-# echo "stderr_logfile=/var/log/delegated_entrypoint_err.log" >> /etc/supervisor/conf.d/delegated_entrypoint.conf
-fi
-
-# Запускаем наш сохраненный скрипт, и перенаправляем выводы майнера в /root/miner.log
-exec /root/mine.sh >> /root/miner.log 2>&1
+# Запускаем майнер, и перенаправляем его вывод в /root/miner.log
+exec /root/rigel-1.15.0-linux/rigel -a $ALGO -o $POOL1 -u $WALLET1 -w $WORKER >> /root/miner.log 2>&1
